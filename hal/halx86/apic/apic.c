@@ -138,7 +138,18 @@ FORCEINLINE
 VOID
 ApicRequestSelfInterrupt(IN UCHAR Vector, UCHAR TriggerMode)
 {
+    ULONG Flags;
     APIC_INTERRUPT_COMMAND_REGISTER Icr;
+    APIC_INTERRUPT_COMMAND_REGISTER IcrStatus;
+
+    /*
+     * The IRR registers are spaced 16 bytes apart and hold 32 status bits each.
+     * Pre-compute the register and bit that match our vector.
+     */
+    ULONG VectorHigh = Vector / 32;
+    ULONG VectorLow = Vector % 32;
+    ULONG Irr = APIC_IRR + 0x10 * VectorHigh;
+    ULONG IrrBit = 1UL << VectorLow;
 
     /* Setup the command register */
     Icr.Long0 = 0;
@@ -147,8 +158,32 @@ ApicRequestSelfInterrupt(IN UCHAR Vector, UCHAR TriggerMode)
     Icr.TriggerMode = TriggerMode;
     Icr.DestinationShortHand = APIC_DSH_Self;
 
+    /* Disable interrupts so that we can change IRR without being interrupted */
+    Flags = __readeflags();
+    _disable();
+
+    /* Wait for the APIC to be idle */
+    do
+    {
+        IcrStatus.Long0 = ApicRead(APIC_ICR0);
+    } while (IcrStatus.DeliveryStatus);
+
     /* Write the low dword to send the interrupt */
     ApicWrite(APIC_ICR0, Icr.Long0);
+
+    /* Wait until we see the interrupt request.
+     * It will stay in requested state until we re-enable interrupts.
+     */
+    while (!(ApicRead(Irr) & IrrBit))
+    {
+        NOTHING;
+    }
+
+    /* Finally, restore the original interrupt state */
+    if (Flags & EFLAGS_INTERRUPT_MASK)
+    {
+        _enable();
+    }
 }
 
 FORCEINLINE
@@ -286,7 +321,7 @@ ApicInitializeLocalApic(ULONG Cpu)
 
     /* Create a template LVT */
     LvtEntry.Long = 0;
-    LvtEntry.Vector = 0xFF;
+    LvtEntry.Vector = APIC_FREE_VECTOR;
     LvtEntry.MessageType = APIC_MT_Fixed;
     LvtEntry.DeliveryStatus = 0;
     LvtEntry.RemoteIRR = 0;
@@ -336,7 +371,7 @@ HalpAllocateSystemInterrupt(
 {
     IOAPIC_REDIRECTION_REGISTER ReDirReg;
 
-    ASSERT(Irq < 24);
+    ASSERT(Irq < APIC_MAX_IRQ);
     ASSERT(HalpVectorToIndex[Vector] == APIC_FREE_VECTOR);
 
     /* Setup a redirection entry */
@@ -375,7 +410,7 @@ HalpGetRootInterruptVector(
     Vector = HalpIrqToVector(BusInterruptLevel);
 
     /* Check if it's used */
-    if (Vector != 0xFF)
+    if (Vector != APIC_FREE_VECTOR)
     {
         /* Calculate IRQL */
         NT_ASSERT(HalpVectorToIndex[Vector] == BusInterruptLevel);
@@ -439,7 +474,7 @@ ApicInitializeIOApic(VOID)
     _ReadWriteBarrier();
 
     /* Setup a redirection entry */
-    ReDirReg.Vector = 0xFF;
+    ReDirReg.Vector = APIC_FREE_VECTOR;
     ReDirReg.DeliveryMode = APIC_MT_Fixed;
     ReDirReg.DestinationMode = APIC_DM_Physical;
     ReDirReg.DeliveryStatus = 0;
@@ -646,7 +681,7 @@ HalEnableSystemInterrupt(
     Index = HalpVectorToIndex[Vector];
 
     /* Check if its valid */
-    if (Index == 0xff)
+    if (Index == APIC_FREE_VECTOR)
     {
         /* Interrupt is not in use */
         return FALSE;

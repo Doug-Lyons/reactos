@@ -62,6 +62,9 @@ HKR, , Icon,           0, "-28"
 %IntelP4Processor.DeviceDesc%     = Processr_Inst,ACPI\GenuineIntel_-_x86_Family_15
 %IntelProcessor.DeviceDesc%       = Processr_Inst,ACPI\GenuineIntel_-_x86
 
+[Intel.NTAMD64]
+%IntelProcessor.DeviceDesc%       = Processr_Inst,ACPI\GenuineIntel_-_EM64T
+
 [AMD]
 %AMDK6Processor.DeviceDesc%   = Processr_Inst,ACPI\AuthenticAMD_-_x86_Family_5_Model_7
 %AMDK62Processor.DeviceDesc%  = Processr_Inst,ACPI\AuthenticAMD_-_x86_Family_5_Model_8
@@ -74,6 +77,10 @@ HKR, , Icon,           0, "-28"
 %AMDQProcessor.DeviceDesc%    = Processr_Inst,ACPI\AuthenticAMD_-_x86_Family_17
 %AMDProcessor.DeviceDesc%     = Processr_Inst,ACPI\AuthenticAMD_-_x86
 
+[AMD.NTAMD64]
+%AMDK8Processor.DeviceDesc%   = Processr_Inst,ACPI\AuthenticAMD_-_AMD64_Family_15
+%AMDProcessor.DeviceDesc%     = Processr_Inst,ACPI\AuthenticAMD_-_AMD64
+
 [Transmeta]
 %TransmetaProcessor.DeviceDesc% = Processr_Inst,ACPI\GenuineTMx86_-_x86
 
@@ -83,6 +90,9 @@ HKR, , Icon,           0, "-28"
 %ViaC7Processor.DeviceDesc%   = Processr_Inst,ACPI\CentaurHauls_-_x86_Family_6_Model_13
 %ViaNANOProcessor.DeviceDesc% = Processr_Inst,ACPI\CentaurHauls_-_x86_Family_6_Model_15
 %ViaProcessor.DeviceDesc%     = Processr_Inst,ACPI\CentaurHauls_-_x86
+
+[VIA.NTAMD64]
+%ViaProcessor.DeviceDesc%     = Processr_Inst,ACPI\CentaurHauls_-_VIA64
 
 ;---------------------------- Processr Driver ---------------------------
 
@@ -217,11 +227,37 @@ Standard = "Πρότυπος επεξεργαστής"
 
 [Strings.0a]
 ReactOS = "Equipo de ReactOS"
+ProcessorClassName = "Procesadores"
+
 Processor.DeviceDesc = "Procesador"
-Processor.ServiceDesc = "Processor driver"
-IntelProcessor.DeviceDesc = "Procesador Intel"
+Processor.ServiceDesc = "Driver de procesador"
+CyrixProcessor.DeviceDesc = "Procesador Cyrix 6x86"
+IntelProcessor.DeviceDesc = "Procesador Intel Pentium"
+IntelMMXProcessor.DeviceDesc = "Procesador Intel Pentium MMX"
+IntelPROProcessor.DeviceDesc = "Procesador Intel Pentium Pro"
+IntelP2Processor.DeviceDesc = "Procesador Intel Pentium II / Celeron"
+IntelP3Processor.DeviceDesc = "Procesador Intel Pentium III / Celeron / Xeon"
+IntelMProcessor.DeviceDesc = "Procesador Intel Pentium M / Celeron M"
+IntelP4Processor.DeviceDesc = "Procesador Intel Pentium 4 / Celeron / Xeon / D"
+IntelAtomProcessor.DeviceDesc = "Procesador Intel Atom"
+IntelCoreProcessor.DeviceDesc = "Procesador Intel Core Solo/Duo/Ex / Celeron / Xeon / M"
+IntelCoreiXProcessor.DeviceDesc = "Procesador Intel Core i*"
 AMDProcessor.DeviceDesc = "Procesador AMD"
+AMDK6Processor.DeviceDesc = "Procesador AMD K6"
+AMDK62Processor.DeviceDesc = "Procesador AMD K6-2"
+AMDK63Processor.DeviceDesc = "Procesador AMD K6-III / Geode"
+AMDK7Processor.DeviceDesc = "Procesador AMD Athlon / Duron / Geode NX / Sempron"
+AMDK8Processor.DeviceDesc = "Procesador AMD Athlon 64 / Turion 64 / Opteron / Sempron"
+AMDPHENProcessor.DeviceDesc = "Procesador AMD Athlon 64 X / Turion 64 X / Phenom"
+AMDQProcessor.DeviceDesc = "Procesador AMD Athlon 64 Q* / Turion 64 *M / Sempron S*"
+TransmetaProcessor.DeviceDesc = "Procesador Transmeta Crusoe"
 Standard = "Procesador estándar"
+ViaC7Processor.DeviceDesc = "Procesador VIA C7"
+ViaNEHProcessor.DeviceDesc = "Procesador VIA Nehemiah"
+ViaESTProcessor.DeviceDesc = "Procesador VIA Esther"
+ViaNANOProcessor.DeviceDesc = "Procesador VIA Nano"
+ViaProcessor.DeviceDesc = "Procesador VIA"
+
 
 [Strings.040C]
 Processor.DeviceDesc = "Processeur"
@@ -239,11 +275,6 @@ Standard = "スタンダードプロセッサ"
 ReactOS = "Zespół ReactOS"
 ProcessorClassName = "Procesory"
 
-CyrixMfg = "Cyrix"
-IntelMfg = "Intel"
-AMDMfg = "Advanced Micro Devices"
-TransmetaMfg = "Transmeta"
-VIAMfg = "VIA"
 Processor.DeviceDesc = "Procesor"
 Processor.ServiceDesc = "Processor driver"
 CyrixProcessor.DeviceDesc = "Procesor Cyrix 6x86"
@@ -355,11 +386,6 @@ Standard = "Štandardný procesor"
 ReactOS = "ReactOS Vakfı"
 ProcessorClassName = "İşlemciler"
 
-CyrixMfg = "Cyrix"
-IntelMfg = "Intel"
-AMDMfg = "Advanced Micro Devices"
-TransmetaMfg = "Transmeta"
-VIAMfg = "VIA"
 Processor.DeviceDesc = "İşlemci"
 Processor.ServiceDesc = "İşlemci sürücüsü"
 CyrixProcessor.DeviceDesc = "Cyrix 6x86 İşlemci"

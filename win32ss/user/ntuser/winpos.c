@@ -1926,6 +1926,10 @@ co_WinPosSetWindowPos(
       Window->head.pti->cVisWindows++;
       IntNotifyWinEvent(EVENT_OBJECT_SHOW, Window, OBJID_WINDOW, CHILDID_SELF, WEF_SETBYWNDPTI);
    }
+   else
+   {
+      IntCheckFullscreen(Window);
+   }
 
    if (Window->hrgnUpdate != NULL && Window->hrgnUpdate != HRGN_WINDOW)
    {
@@ -2099,10 +2103,7 @@ co_WinPosSetWindowPos(
                    IntInvalidateWindows( Parent, DirtyRgn, RDW_ERASE | RDW_INVALIDATE);
                    co_IntPaintWindows(Parent, RDW_NOCHILDREN, FALSE);
                 }
-                else
-                {
-                   IntInvalidateWindows( Window, DirtyRgn, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
-                }
+                IntInvalidateWindows(Window, DirtyRgn, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
              }
              else if ( RgnType != ERROR && RgnType == NULLREGION ) // Must be the same. See CORE-7166 & CORE-15934, NC HACK fix.
              {
@@ -3160,12 +3161,12 @@ NtUserChildWindowFromPointEx(HWND hwndParent,
  */
 BOOL APIENTRY
 NtUserEndDeferWindowPosEx(HDWP WinPosInfo,
-                          DWORD Unknown1)
+                          BOOL bAsync)
 {
    BOOL Ret;
    TRACE("Enter NtUserEndDeferWindowPosEx\n");
    UserEnterExclusive();
-   Ret = IntEndDeferWindowPosEx(WinPosInfo, (BOOL)Unknown1);
+   Ret = IntEndDeferWindowPosEx(WinPosInfo, bAsync);
    TRACE("Leave NtUserEndDeferWindowPosEx, ret=%i\n", Ret);
    UserLeave();
    return Ret;

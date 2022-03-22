@@ -9,7 +9,6 @@
 
 #include "precomp.h"
 
-#include <windef.h>
 #include <ws2spi.h>
 #include <nspapi.h>
 #include <svc.h>
@@ -442,7 +441,7 @@ StopWsdpService()
 
 /*
  * @unimplemented
- * 
+ *
  * See https://www.geoffchappell.com/studies/windows/win32/services/svchost/dll/svchostpushserviceglobals.htm
  */
 VOID

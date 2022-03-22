@@ -164,8 +164,6 @@ DoLoadIcons(HWND hwndDlg, PPICK_ICON_CONTEXT pIconContext, LPCWSTR pszFile)
     return (pIconContext->nIcons > 0);
 }
 
-static const LPCWSTR s_pszDefaultPath = L"%SystemRoot%\\system32\\shell32.dll";
-
 static void NoIconsInFile(HWND hwndDlg, PPICK_ICON_CONTEXT pIconContext)
 {
     // Show an error message
@@ -174,7 +172,7 @@ static void NoIconsInFile(HWND hwndDlg, PPICK_ICON_CONTEXT pIconContext)
     MessageBoxW(hwndDlg, strText, strTitle, MB_ICONWARNING);
 
     // Load the default icons
-    DoLoadIcons(hwndDlg, pIconContext, s_pszDefaultPath);
+    DoLoadIcons(hwndDlg, pIconContext, g_pszShell32);
 }
 
 // Icon size
@@ -388,7 +386,7 @@ BOOL WINAPI PickIconDlg(
         }
 
         // Set the default value
-        StringCchCopyW(IconContext.szPath, _countof(IconContext.szPath), s_pszDefaultPath);
+        StringCchCopyW(IconContext.szPath, _countof(IconContext.szPath), g_pszShell32);
     }
 
     // Show the dialog
@@ -435,7 +433,6 @@ static LPWSTR RunDlg_GetParentDir(LPCWSTR cmdline)
 {
     const WCHAR *src;
     WCHAR *dest, *result, *result_end=NULL;
-    static const WCHAR dotexeW[] = L".exe";
 
     result = (WCHAR *)HeapAlloc(GetProcessHeap(), 0, sizeof(WCHAR)*(strlenW(cmdline)+5));
 
@@ -466,7 +463,7 @@ static LPWSTR RunDlg_GetParentDir(LPCWSTR cmdline)
                 *dest = 0;
                 if (INVALID_FILE_ATTRIBUTES != GetFileAttributesW(result))
                     break;
-                strcatW(dest, dotexeW);
+                strcatW(dest, L".exe");
                 if (INVALID_FILE_ATTRIBUTES != GetFileAttributesW(result))
                     break;
             }
@@ -1149,7 +1146,7 @@ BOOL DrawIconOnOwnerDrawnButtons(DRAWITEMSTRUCT* pdis, PLOGOFF_DLG_CONTEXT pCont
                 case ODA_DRAWENTIRE:
                 case ODA_FOCUS:
                 case ODA_SELECT:
-                {    
+                {
                     y = BUTTON_LOG_OFF;
                     if (pdis->itemState & ODS_SELECTED)
                     {
@@ -1172,7 +1169,7 @@ BOOL DrawIconOnOwnerDrawnButtons(DRAWITEMSTRUCT* pdis, PLOGOFF_DLG_CONTEXT pCont
                 case ODA_DRAWENTIRE:
                 case ODA_FOCUS:
                 case ODA_SELECT:
-                {    
+                {
                     y = BUTTON_SWITCH_USER;
                     if (pdis->itemState & ODS_SELECTED)
                     {
@@ -1201,7 +1198,7 @@ BOOL DrawIconOnOwnerDrawnButtons(DRAWITEMSTRUCT* pdis, PLOGOFF_DLG_CONTEXT pCont
     /* Draw it on the required button */
     bRet = BitBlt(pdis->hDC,
                   (rect.right - rect.left - CX_BITMAP) / 2,
-                  (rect.bottom - rect.top - CY_BITMAP) / 2, 
+                  (rect.bottom - rect.top - CY_BITMAP) / 2,
                   CX_BITMAP, CY_BITMAP, hdcMem, 0, y, SRCCOPY);
 
     SelectObject(hdcMem, hbmOld);
@@ -1480,7 +1477,7 @@ INT_PTR CALLBACK LogOffDialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
         case WM_CTLCOLORSTATIC:
         {
             /* Either make background transparent or fill it with color for required static controls */
-            HDC hdcStatic = (HDC)wParam;            
+            HDC hdcStatic = (HDC)wParam;
             UINT StaticID = (UINT)GetWindowLongPtrW((HWND)lParam, GWL_ID);
 
             switch (StaticID)
